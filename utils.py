@@ -1,6 +1,18 @@
 import robonomicsinterface as RI
 import yaml
 import os
+import logging
+
+def get_logger() -> logging.Logger:
+    logger = logging.getLogger(__name__)
+    logger.propagate = False
+    handler = logging.StreamHandler()
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+    return logger
+
+logger = get_logger()
 
 def read_config() -> dict:
     path = os.path.realpath(__file__)[:-len(__file__)]
@@ -20,7 +32,7 @@ def get_devices(dev: bool=False) -> None:
                         seed=config['subscription_owner_seed']
                         )
     devices = interface.rws_list_devices(interface.define_address())
-    print(f"List of devices: {devices}")
+    logger.info(f"List of devices: {devices}")
     with open(config['devices_file'], "w") as f:
         for device in devices:
             f.write(f"{device}\n")
@@ -30,7 +42,7 @@ def add_device(address: str, dev: bool=False) -> bool:
     with open(config['devices_file']) as f:
         devices = f.readlines()
     if f"{address}\n" in devices:
-        print(f"Address {address} is exists")
+        logger.info(f"Address {address} is exists")
         return True
     devices.append(address)
     if dev:
@@ -49,5 +61,5 @@ def add_device(address: str, dev: bool=False) -> bool:
         f"Address {address} was successfully added to subscription"
         return True
     except Exception as e:
-        print(f"Can't set devices with error: {e}")
+        logger.info(f"Can't set devices with error: {e}")
         return False
