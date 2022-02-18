@@ -1,4 +1,5 @@
 import discord
+import threading
 from utils import read_config, add_device, get_devices
 from substrateinterface.utils.ss58 import is_valid_ss58_address
 
@@ -31,13 +32,15 @@ async def on_message(message):
                 break
         else:
             address = ""
-        result = add_device(address, dev=DEV)
-        if result:
-            response = f"Address {address} from {message.author} was successfully added to subscription"
-            await message.channel.send(response)
-        else:
-            response = f"Address {address} from {message.author} wasn't added to subscription\n Please, send your address again"
-            await message.channel.send(response)
+        await add_device(address, message, dev=DEV)
+        #result = add_device(address, dev=DEV)
+        #threading.Thread(target=add_device, name="DatalogSender", args=[address, message.channel, DEV]).start()
+        # if result:
+        #     response = f"Address {address} from {message.author} was successfully added to subscription"
+        #     await message.channel.send(response)
+        # else:
+        #     response = f"Address {address} from {message.author} wasn't added to subscription\n Please, send your address again"
+        #     await message.channel.send(response)
 
 if __name__ == '__main__':
     get_devices(dev=DEV)
