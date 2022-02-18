@@ -49,7 +49,7 @@ async def add_device(address: str, message: discord.message.Message, dev: bool=F
         with open(config['devices_file'], "a") as f:
             f.write(f"{address}\n")
         print(f"Address {address} was successfully added to subscription")
-        await message.channel.send(f"Address {address} was successfully added to subscription")
+        await message.channel.send(f"Address {address} from {message.author} was successfully added to subscription")
         return True
     except Exception as e:
         print(f"Can't set devices with error: {e}")
