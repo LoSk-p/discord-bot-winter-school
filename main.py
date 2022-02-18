@@ -2,7 +2,7 @@ import discord
 from utils import read_config, add_device, get_devices
 
 # Work with local node
-DEV = True
+DEV = False
 
 client = discord.Client()
 config = read_config()
