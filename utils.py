@@ -2,7 +2,6 @@ import robonomicsinterface as RI
 import yaml
 import os
 
-
 def read_config() -> dict:
     path = os.path.realpath(__file__)[:-len(__file__)]
     with open(f"{path}config/config.yaml") as f:
