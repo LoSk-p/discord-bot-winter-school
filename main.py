@@ -3,7 +3,7 @@ from utils import read_config, add_device, get_devices
 from substrateinterface.utils.ss58 import is_valid_ss58_address
 
 # Work with local node
-DEV = True
+DEV = False
 
 client = discord.Client()
 config = read_config()
