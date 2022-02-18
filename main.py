@@ -1,5 +1,5 @@
 import discord
-from utils import read_config, add_device, get_devices, get_logger
+from utils import read_config, add_device, get_devices
 from substrateinterface.utils.ss58 import is_valid_ss58_address
 
 # Work with local node
@@ -7,14 +7,13 @@ DEV = False
 
 client = discord.Client()
 config = read_config()
-logger = get_logger()
 
 @client.event
 async def on_ready():
     for guild in client.guilds:
         if guild.name == config['guild']:
             break
-    logger.info(
+    print(
         f'{client.user} is connected to the {guild.name}\n'
     )
 
@@ -23,7 +22,7 @@ async def on_message(message):
     if message.author == client.user or message.author == "MEE6":
         return
     if str(message.channel) == config['channel']:
-        logger.info(f"Got message: {message.content}")
+        print(f"Got message: {message.content}")
         mes = str(message.content).split()
         for word in mes:
             word = word.strip()
