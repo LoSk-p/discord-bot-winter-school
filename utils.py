@@ -19,7 +19,6 @@ def get_devices(dev: bool=False) -> None:
         interface = RI.RobonomicsInterface(
                         seed=config['subscription_owner_seed']
                         )
-    print("Hello")
     devices = interface.rws_list_devices(interface.define_address())
     print(f"List of devices: {devices}")
     with open(config['devices_file'], "w") as f:
