@@ -19,9 +19,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author == client.user:
+    if message.author == client.user or message.author == "MEE6":
         return
-    print(message.channel)
     if str(message.channel) == config['channel']:
         print(f"Got message: {message.content}")
         mes = str(message.content).split()
