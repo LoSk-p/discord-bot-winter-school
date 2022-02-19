@@ -2,6 +2,16 @@ import robonomicsinterface as RI
 import yaml
 import os
 import discord
+import functools
+import typing
+import asyncio
+
+
+def to_thread(func: typing.Callable) -> typing.Coroutine:
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        return await asyncio.to_thread(func, *args, **kwargs)
+    return wrapper
 
 def read_config() -> dict:
     path = os.path.realpath(__file__)[:-len(__file__)]
@@ -26,13 +36,13 @@ def get_devices(dev: bool=False) -> None:
         for device in devices:
             f.write(f"{device}\n")
 
-async def add_device(address: str, message: discord.message.Message, dev: bool=False) -> bool:
+@to_thread
+def add_device(address: str, message: discord.message.Message, dev: bool=False) -> bool:
     config = read_config()
     with open(config['devices_file']) as f:
         devices = f.readlines()
     if f"{address}\n" in devices:
         print(f"Address {address} is exists")
-        await message.channel.send(f"Address {address} is exists")
         return True
     devices.append(address)
     if dev:
@@ -49,9 +59,7 @@ async def add_device(address: str, message: discord.message.Message, dev: bool=F
         with open(config['devices_file'], "a") as f:
             f.write(f"{address}\n")
         print(f"Address {address} was successfully added to subscription")
-        await message.channel.send(f"Address {address} from {message.author} was successfully added to subscription")
         return True
     except Exception as e:
         print(f"Can't set devices with error: {e}")
-        await message.channel.send(f"Address {address} from {message.author} wasn't added to subscription\n Please, send your address again")
         return False

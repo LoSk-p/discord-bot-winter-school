@@ -6,7 +6,7 @@ from substrateinterface.utils.ss58 import is_valid_ss58_address
 # Work with local node
 DEV = False
 
-client = discord.Client()
+client = discord.Client(heartbeat_timeout=120)
 config = read_config()
 
 @client.event
@@ -20,7 +20,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author == client.user or message.author == "MEE6":
+    if message.author == client.user or message.author == "MEE6#4876":
         return
     if str(message.channel) == config['channel']:
         print(f"Got message: {message.content}")
@@ -32,15 +32,11 @@ async def on_message(message):
                 break
         else:
             address = ""
-        await add_device(address, message, dev=DEV)
-        #result = add_device(address, dev=DEV)
-        #threading.Thread(target=add_device, name="DatalogSender", args=[address, message.channel, DEV]).start()
-        # if result:
-        #     response = f"Address {address} from {message.author} was successfully added to subscription"
-        #     await message.channel.send(response)
-        # else:
-        #     response = f"Address {address} from {message.author} wasn't added to subscription\n Please, send your address again"
-        #     await message.channel.send(response)
+        response = await add_device(address, message, dev=DEV)
+        if response:
+            await message.channel.send(f"Address {address} from {message.author} was successfully added to subscription")
+        else:
+            await message.channel.send(f"Address {address} from {message.author} wasn't added to subscription\n Please, send your address again")
 
 if __name__ == '__main__':
     get_devices(dev=DEV)
