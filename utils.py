@@ -37,7 +37,7 @@ def get_devices(dev: bool=False) -> None:
             f.write(f"{device}\n")
 
 @to_thread
-def add_device(address: str, message: discord.message.Message, dev: bool=False) -> bool:
+def add_device(address: str, dev: bool=False) -> bool:
     config = read_config()
     with open(config['devices_file']) as f:
         devices = f.readlines()

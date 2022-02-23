@@ -1,5 +1,4 @@
 import discord
-import threading
 from utils import read_config, add_device, get_devices
 from substrateinterface.utils.ss58 import is_valid_ss58_address
 
@@ -20,7 +19,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author == client.user or message.author == "MEE6#4876":
+    if message.author == client.user:
         return
     if str(message.channel) == config['channel']:
         print(f"Got message: {message.content}")
@@ -28,15 +27,16 @@ async def on_message(message):
         for word in mes:
             word = word.strip()
             if is_valid_ss58_address(word):
-                address = word
-                break
-        else:
-            address = ""
-        response = await add_device(address, message, dev=DEV)
-        if response:
-            await message.channel.send(f"Address {address} from {message.author} was successfully added to subscription")
-        else:
-            await message.channel.send(f"Address {address} from {message.author} wasn't added to subscription\n Please, send your address again")
+                if is_valid_ss58_address(word, valid_ss58_format=32):
+                    address = word
+                    response = await add_device(address, dev=DEV)
+                    if response:
+                        await message.channel.send(f"Address {address} from {message.author} was successfully added to subscription")
+                    else:
+                        await message.channel.send(f"Address {address} from {message.author} wasn't added to subscription\n Please, send your address again")
+                    break
+                else:
+                    await message.channel.send(f"Address {word} from {message.author} has wrong format. Please, use address from https://blackmirror.robonomics.network/#/")
 
 if __name__ == '__main__':
     get_devices(dev=DEV)
