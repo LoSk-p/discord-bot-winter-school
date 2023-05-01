@@ -22,7 +22,8 @@ async def on_message(message):
     if message.author == client.user:
         return
     if str(message.channel) == config['channel']:
-        print(f"Got message: {message.content}")
+        print(f"Got message: {message}")
+        print(f"Got message content: {message.content}")
         mes = str(message.content).split()
         for word in mes:
             word = word.strip()

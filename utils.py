@@ -1,4 +1,5 @@
-import robonomicsinterface as RI
+from robonomicsinterface import RWS, Account, Datalog, DigitalTwin, SubEvent, Subscriber
+from substrateinterface import KeypairType
 import yaml
 import os
 import discord
@@ -21,17 +22,10 @@ def read_config() -> dict:
 
 def get_devices(dev: bool=False) -> None:
     config = read_config()
-    if dev:
-        interface = RI.RobonomicsInterface(
-                        seed=config['subscription_owner_seed'], 
-                        remote_ws="ws://127.0.0.1:9944"
-                        )
-    else:
-        interface = RI.RobonomicsInterface(
-                        seed=config['subscription_owner_seed']
-                        )
-    devices = interface.rws_list_devices(interface.define_address())
+    sub_owner = Account(seed=config['subscription_owner_seed'], crypto_type=KeypairType.ED25519)
+    devices = RWS(Account()).get_devices(sub_owner.get_address())
     print(f"List of devices: {devices}")
+    print(f"Devices file: {config['devices_file']}")
     with open(config['devices_file'], "w") as f:
         for device in devices:
             f.write(f"{device}\n")
@@ -45,17 +39,10 @@ def add_device(address: str, dev: bool=False) -> bool:
         print(f"Address {address} is exists")
         return True
     devices.append(address)
-    if dev:
-        interface = RI.RobonomicsInterface(
-                        seed=config['subscription_owner_seed'], 
-                        remote_ws="ws://127.0.0.1:9944"
-                        )
-    else:
-        interface = RI.RobonomicsInterface(
-                        seed=config['subscription_owner_seed']
-                        )
+    sub_owner = Account(seed=config['subscription_owner_seed'], crypto_type=KeypairType.ED25519)
+    rws = RWS(sub_owner)
     try:
-        interface.rws_set_devices(devices)
+        rws.set_devices(devices)
         with open(config['devices_file'], "a") as f:
             f.write(f"{address}\n")
         print(f"Address {address} was successfully added to subscription")
